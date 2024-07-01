@@ -43,6 +43,8 @@ def init_resnet_func(
 
     if save_hidden:
       if save_timestep is None or self.timestep in save_timestep:
+        """ Save this ResBlock's output to its "feats" object 
+        if this is the required timestep """
         self.feats[self.timestep] = hidden_states
     elif use_hidden:
       hidden_states = self.feats[self.timestep]

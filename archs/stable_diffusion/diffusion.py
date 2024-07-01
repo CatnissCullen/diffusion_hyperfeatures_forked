@@ -130,7 +130,7 @@ def generalized_steps(x, model, scheduler, **kwargs):
       xt = xs[-1].to(x.device)
       cond = kwargs["conditional"]
       guidance_scale = kwargs.get("guidance_scale", -1)
-      if guidance_scale == -1:
+      if guidance_scale == -1:  # no guidance
         et = model(xt, t, encoder_hidden_states=cond).sample
       else:
         # If using Classifier-Free Guidance, the saved feature maps
@@ -175,7 +175,7 @@ def init_models(
     freeze_weights(clip)
   return unet, vae, clip, clip_tokenizer
 
-def collect_and_resize_feats(unet, idxs, timestep, resolution=-1):
+def collect_and_resize_feats(unet, idxs, timestep, resolution=-1):  # given a certain layer idx & timestep for extraction
   latent_feats = collect_feats(unet, idxs=idxs)
   latent_feats = [feat[timestep] for feat in latent_feats]
   if resolution > 0:

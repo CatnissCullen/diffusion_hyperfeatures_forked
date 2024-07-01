@@ -44,6 +44,8 @@ def extract_hyperfeats(config, diffusion_extractor, aggregation_network, images_
       with torch.autocast("cuda"):
         if config["diffusion_mode"] == "inversion":
             imgs, save_names = [], []
+            """ Extract a list of images' Hyper-Features """
+            # Preprocess Image
             for path in images_or_prompts[i:i+b]:
                 img_pil = Image.open(path).convert("RGB")
                 img, _ =  process_image(img_pil, res=load_size)
@@ -51,7 +53,9 @@ def extract_hyperfeats(config, diffusion_extractor, aggregation_network, images_
                 imgs.append(img)
                 save_names.append(os.path.basename(path).split(".")[0])
             imgs = torch.vstack(imgs)
+            # Extract Unet Layers
             feats, _ = diffusion_extractor.forward(imgs)
+            # Aggregate Features
             diffusion_hyperfeats = aggregation_network(feats.float().view((b, -1, w, h)))
         elif config["diffusion_mode"] == "generation":
           prompt = images_or_prompts[i]
