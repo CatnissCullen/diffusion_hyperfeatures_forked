@@ -2,13 +2,13 @@ from PIL import Image
 import torch
 
 from diffusers import DDIMScheduler
-from stable_diffusion.diffusion import (
+from archs.stable_diffusion.diffusion import (
     init_models, 
     get_tokens_embedding,
     generalized_steps,
     collect_and_resize_feats
 )
-from stable_diffusion.resnet import init_resnet_func
+from archs.stable_diffusion.resnet import init_resnet_func
 
 class DiffusionExtractor:
     """
@@ -29,6 +29,7 @@ class DiffusionExtractor:
         self.batch_size = config.get("batch_size", 1)
 
         self.unet, self.vae, self.clip, self.clip_tokenizer = init_models(device=self.device, model_id=config["model_id"])
+        self.vae = self.vae.to(torch.float32)
         self.prompt = config.get("prompt", "")
         self.negative_prompt = config.get("negative_prompt", "")
         self.change_cond(self.prompt, "cond")

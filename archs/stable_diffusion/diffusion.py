@@ -14,7 +14,7 @@ from transformers import (
     CLIPTextModel, 
     CLIPTokenizer
 )
-from resnet import set_timestep, collect_feats
+from archs.stable_diffusion.resnet import set_timestep, collect_feats
 
 """
 Functions for running the generalized diffusion process 
@@ -164,6 +164,7 @@ def init_models(
   )
   unet = pipe.unet
   vae = pipe.vae
+  vae = vae.to(torch.float32)
   clip = pipe.text_encoder
   clip_tokenizer = pipe.tokenizer
   unet.to(device)
