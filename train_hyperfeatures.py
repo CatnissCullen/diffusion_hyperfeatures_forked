@@ -48,6 +48,7 @@ def log_aggregation_network(aggregation_network, config):
     wandb.log({f"mixing_weights": plt})
 
 def get_hyperfeats(diffusion_extractor, aggregation_network, imgs):
+    print("input shape:", imgs.shape)
     with torch.inference_mode():
         with torch.autocast("cuda"):
             feats, _ = diffusion_extractor.forward(imgs)

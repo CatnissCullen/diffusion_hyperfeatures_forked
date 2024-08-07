@@ -94,22 +94,29 @@ class DiffusionExtractor:
             min_i=min_i,
             max_i=max_i
         )
-        return xs
+        return xs  # predicted X0s during denoise
 
     def get_feats(self, latents, extractor_fn, preview_mode=False):
         # returns feats of shape [batch_size, num_timesteps, channels, w, h]
         if not preview_mode:
+            #  modify unet's resnet layers for layer outputs (features) storage
             init_resnet_func(self.unet, save_hidden=True, reset=True, idxs=self.idxs, save_timestep=self.save_timestep)
-        outputs = extractor_fn(latents)
+        #  run the modified unet to store features to <module>.feats
+        outputs = extractor_fn(latents)  # predicted X0s during denoise
         if not preview_mode:
             feats = []
             for timestep in self.save_timestep:
+                # collect & resize features of required module at required timestep
                 timestep_feats = collect_and_resize_feats(self.unet, self.idxs, timestep, self.output_resolution)
+                # append to list 'feats'
                 feats.append(timestep_feats)
-            feats = torch.stack(feats, dim=1)
+            # stack unet features as tensor
+            feats = torch.stack(feats, dim=1)  # all collected unet features
+            # clear feature storage
             init_resnet_func(self.unet, reset=True)
         else:
             feats = None
+        # return unet features tensor & predicted X0s
         return feats, outputs
 
     def latents_to_images(self, latents):

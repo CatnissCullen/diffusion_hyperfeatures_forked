@@ -72,4 +72,5 @@ class AggregationNetwork(nn.Module):
                 output_feature = bottlenecked_feature
             else:
                 output_feature += bottlenecked_feature
+        # return the aggregated unet features
         return output_feature

@@ -4,14 +4,14 @@ from PIL import Image
 import PIL
 import torch
 from diffusers import (
-    AutoencoderKL, 
-    UNet2DConditionModel, 
-    DDIMScheduler, 
+    AutoencoderKL,
+    UNet2DConditionModel,
+    DDIMScheduler,
     StableDiffusionPipeline
 )
 from transformers import (
-    CLIPModel, 
-    CLIPTextModel, 
+    CLIPModel,
+    CLIPTextModel,
     CLIPTokenizer
 )
 from archs.stable_diffusion.resnet import set_timestep, collect_feats
@@ -107,7 +107,7 @@ def generalized_steps(x, model, scheduler, **kwargs):
         break
       if min_i is not None and i < min_i:
         continue
-      
+
       t = (torch.ones(n) * t).to(x.device)
       next_t = (torch.ones(n) * next_t).to(x.device)
       if t.sum() == -t.shape[0]:
@@ -118,7 +118,7 @@ def generalized_steps(x, model, scheduler, **kwargs):
         at_next = torch.ones_like(t)
       else:
         at_next = (1 - b).cumprod(dim=0).index_select(0, next_t.long())
-      
+
       # Expand to the correct dim
       at, at_next = at[:, None, None, None], at_next[:, None, None, None]
 
@@ -130,7 +130,10 @@ def generalized_steps(x, model, scheduler, **kwargs):
       xt = xs[-1].to(x.device)
       cond = kwargs["conditional"]
       guidance_scale = kwargs.get("guidance_scale", -1)
+
+      # Predict Noise
       if guidance_scale == -1:  # no guidance
+        print(xt.shape)
         et = model(xt, t, encoder_hidden_states=cond).sample
       else:
         # If using Classifier-Free Guidance, the saved feature maps
@@ -139,12 +142,12 @@ def generalized_steps(x, model, scheduler, **kwargs):
         et_uncond = model(xt, t, encoder_hidden_states=uncond).sample
         et_cond = model(xt, t, encoder_hidden_states=cond).sample
         et = et_uncond + guidance_scale * (et_cond - et_uncond)
-      
+
       eta = kwargs.get("eta", 0.0)
       x0_t, xt_next = get_xt_next(xt, et, at, at_next, eta)
 
-      x0_preds.append(x0_t)
-      xs.append(xt_next.to('cpu'))
+      x0_preds.append(x0_t)  # predicted X0s during denoise
+      xs.append(xt_next.to('cpu'))  # Xts during denoise
 
     return x0_preds
 
