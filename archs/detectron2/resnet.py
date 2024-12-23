@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from torch import nn
 import torch.nn.functional as F
 import fvcore.nn.weight_init as weight_init
@@ -56,7 +57,7 @@ class Conv2d(nn.Conv2d):
         if self.activation is not None:
             x = self.activation(x)
         return x
-    
+
 class CNNBlockBase(nn.Module):
     """
     A CNN block is assumed to have input channels, output channels and a stride.
@@ -81,7 +82,7 @@ class CNNBlockBase(nn.Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.stride = stride
-    
+
 class BottleneckBlock(CNNBlockBase):
     """
     The standard bottleneck residual block used by ResNet-50, 101 and 152
@@ -90,17 +91,17 @@ class BottleneckBlock(CNNBlockBase):
     """
 
     def __init__(
-        self,
-        in_channels,
-        out_channels,
-        *,
-        bottleneck_channels,
-        stride=1,
-        num_groups=1,
-        norm="GN",
-        stride_in_1x1=False,
-        dilation=1,
-        num_norm_groups=32
+            self,
+            in_channels,
+            out_channels,
+            *,
+            bottleneck_channels,
+            stride=1,
+            num_groups=1,
+            norm="GN",
+            stride_in_1x1=False,
+            dilation=1,
+            num_norm_groups=32
     ):
         """
         Args:
@@ -194,7 +195,7 @@ class BottleneckBlock(CNNBlockBase):
         out += shortcut
         out = F.relu_(out)
         return out
-    
+
 class ResNet(nn.Module):
     """
     Implement :paper:`ResNet`.

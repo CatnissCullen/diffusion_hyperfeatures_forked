@@ -27,15 +27,18 @@ config, diffusion_extractor, aggregation_network = load_models('./configs/real_o
 with torch.inference_mode():
     with torch.autocast("cuda"):
         # Preprocess Image
-        path = "./test.png"
+        path = "example_imgs/diamond.jpg"
         img_pil = Image.open(path).convert("RGB")
         img, _ =  process_image(img_pil, res=(512, 512))  # tensor img
         img = torch.vstack([img.to(device)])
         print(img.size())
         # Extract Unet Layers
-        feat, _ = diffusion_extractor.forward(img)
+        feats, _ = diffusion_extractor.forward(img)
+        print(len(feats))
+        print(feats[0].shape)
+
         print("done")
         # Aggregate Features
-        diffusion_hyperfeats = aggregation_network(feat.float().view((1, -1, config["output_resolution"], config["output_resolution"])))
+        diffusion_hyperfeats = aggregation_network(feats.float().view((1, -1, config["output_resolution"], config["output_resolution"])))
         print("done")
         print(diffusion_hyperfeats.size())

@@ -157,12 +157,11 @@ def freeze_weights(weights):
 
 def init_models(
     device="cuda",
-    model_id="runwayml/stable-diffusion-v1-5",
+    model_id="sd-legacy/stable-diffusion-v1-5",
     freeze=True
   ):
   pipe = StableDiffusionPipeline.from_pretrained(
     model_id,
-    revision="fp16",
     torch_dtype=torch.float16,
   )
   unet = pipe.unet

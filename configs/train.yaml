@@ -24,9 +24,10 @@ lr: 1e-3
 # ======== Model Hparams =========
 projection_dim: 384
 # ============== SDv1-5 ==========
-model_id: runwayml/stable-diffusion-v1-5
+#model_id: runwayml/stable-diffusion-v1-5
+# sd-legacy/stable-diffusion-v1-5
 # ============== SDv2-1 ==========
-# model_id: stabilityai/stable-diffusion-2-1-base
+model_id: stabilityai/stable-diffusion-2-1-base
 diffusion_mode: inversion
 output_resolution: 64
 load_resolution: 512
